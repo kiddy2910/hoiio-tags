@@ -1,3 +1,11 @@
+/**
+ * hoiio-tags v1.0.0 (2013-12-05)
+ * https://github.com/kiddy2910/hoiio-tags.git
+ *
+ * Copyright (c) 2013 
+ */
+(function ( window, angular, undefined ) {
+
 (function ($) {
     "use strict";
 
@@ -525,3 +533,5 @@
         $("input[data-role=tagsinput], select[multiple][data-role=tagsinput]").tagsinput();
     });
 })(window.jQuery);
+
+})( window, window.angular );
