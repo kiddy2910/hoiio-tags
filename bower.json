@@ -1,17 +1,15 @@
 {
   "name": "hoiio-tags",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "https://github.com/kiddy2910/hoiio-tags.git",
   "main": [ "hoiio-tags.js", "hoiio-tags.less" ],
   "authors": [
     "kiddy2910 <dangduy2910@gmail.com>"
   ],
   "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
+    "*",
+    "!hoiio-tags.js",
+    "!hoiio-tags.less"
   ],
   "description": "Hoiio Tags is based on bootstrap-tagsinput.js",
   "keywords": [

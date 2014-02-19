@@ -39,6 +39,8 @@ module.exports = function (grunt) {
         meta: {
             banner: '/**\n' +
                 ' * <%= pkg.name %> v<%= pkg.version %> (<%= grunt.template.today("yyyy-mm-dd") %>)\n' +
+                ' *\n' +
+                ' * Author: <%= pkg.authors[0] %>\n' +
                 ' * <%= pkg.homepage %>\n' +
                 ' *\n' +
                 ' * Copyright (c) <%= grunt.template.today("yyyy") %> \n' +
@@ -59,32 +61,12 @@ module.exports = function (grunt) {
          * `build_dir`, and then to copy the assets to `compile_dir`.
          */
         copy: {
-            build_src_files: {
+            build_src_files_js: {
                 files: [
                     {
-                        src: [ '<%= src_files.js %>' ],
-                        dest: '<%= build_dir %>',
-                        cwd: '.',
-                        expand: true
-                    }
-                ]
-            },
-            build_css_files: {
-                files: [
-                    {
-                        src: [ '<%= css_files.less %>' ],
-                        dest: '<%= build_dir %>',
-                        cwd: '.',
-                        expand: true
-                    }
-                ]
-            },
-            compile_assets: {
-                files: [
-                    {
-                        src: [ '*.css' ],
-                        dest: '<%= compile_dir %>',
-                        cwd: '<%= build_dir %>/',
+                        src: [ '.' ],
+                        dest: '<%= pkg.name %>.js',
+                        cwd: '<%= concat.build_src_files_js.dest %>',
                         expand: true
                     }
                 ]
@@ -95,45 +77,43 @@ module.exports = function (grunt) {
          * `grunt concat` concatenates multiple source files into a single file.
          */
         concat: {
-            /**
-             * The `build_js` target concatenates JS files together.
-             */
-            build_js: {
+            build_src_files_js: {
                 options: {
                     banner: '<%= meta.banner %>'
                 },
                 src: [
-                    'module.prefix',
-                    '<%= src_files.js %>',
-                    'module.suffix'
+                    '<%= src_files.js %>'
                 ],
                 dest: '<%= build_dir %>/<%= pkg.name %>.js'
             },
-            /**
-             * The `build_css` target concatenates compiled CSS and vendor CSS
-             * together.
-             */
-            build_css: {
-                options: {
-                    banner: '<%= meta.banner %>'
-                },
-                src: '<%= recess.build.dest %>',
-                dest: '<%= recess.build.dest %>'
-            },
-            /**
-             * The `compile_js` target is the concatenation of our application source
-             * code and all specified vendor source code into a single file.
-             */
-            compile_js: {
+            compile_src_files_js: {
                 options: {
                     banner: '<%= meta.banner %>'
                 },
                 src: [
                     'module.prefix',
-                    '<%= build_dir %>/*.js',
+                    '<%= concat.build_src_files_js.dest %>',
                     'module.suffix'
                 ],
                 dest: '<%= compile_dir %>/<%= pkg.name %>.js'
+            },
+            add_banner: {
+                options: {
+                    banner: '<%= meta.banner %>'
+                },
+                src: [
+                    '<%= concat.build_src_files_js.dest %>'
+                ],
+                dest: '<%= build_dir %>/<%= pkg.name %>.js'
+            },
+            add_banner_css: {
+                options: {
+                    banner: '<%= meta.banner %>'
+                },
+                src: [
+                    '<%= recess.build.dest %>'
+                ],
+                dest: '<%= pkg.name %>.css'
             }
         },
 
@@ -142,10 +122,10 @@ module.exports = function (grunt) {
          * to code without the array syntax.
          */
         ngmin: {
-            compile: {
+            build: {
                 files: [
                     {
-                        src: [ '<%= src_files.js %>' ],
+                        src: [ '<%= pkg.name %>.js' ],
                         cwd: '<%= build_dir %>',
                         dest: '<%= build_dir %>',
                         expand: true
@@ -163,7 +143,7 @@ module.exports = function (grunt) {
                     banner: '<%= meta.banner %>'
                 },
                 files: {
-                    '<%= concat.compile_js.dest %>': '<%= concat.compile_js.dest %>'
+                    '<%= concat.compile_src_files_js.dest %>': '<%= concat.build_src_files_js.dest %>'
                 }
             }
         },
@@ -175,7 +155,7 @@ module.exports = function (grunt) {
          */
         recess: {
             build: {
-                src: [ '<%= css_files.less %>'],
+                src: [ '<%= src_files.less %>'],
                 dest: '<%= build_dir %>/<%= pkg.name %>.css',
                 options: {
                     compile: true,
@@ -187,7 +167,7 @@ module.exports = function (grunt) {
             },
             compile: {
                 src: [ '<%= recess.build.dest %>' ],
-                dest: '<%= recess.build.dest %>',
+                dest: '<%= compile_dir %>/<%= pkg.name %>.css',
                 options: {
                     compile: true,
                     compress: true,
@@ -223,6 +203,59 @@ module.exports = function (grunt) {
                 eqnull: true
             },
             globals: {}
+        },
+
+        /**
+         * And for rapid development, we have a watch set up that checks to see if
+         * any of the files listed below change, and then to execute the listed
+         * tasks when they do. This just saves us from having to type "grunt" into
+         * the command-line every time we want to see what we're working on; we can
+         * instead just leave "grunt watch" running in a background terminal. Set it
+         * and forget it, as Ron Popeil used to tell us.
+         *
+         * But we don't need the same thing to happen for all the files.
+         */
+        delta: {
+            /**
+             * By default, we want the Live Reload to work for all tasks; this is
+             * overridden in some tasks (like this file) where browser resources are
+             * unaffected. It runs by default on port 35729, which your browser
+             * plugin should auto-detect.
+             */
+            options: {
+                livereload: true
+            },
+
+            /**
+             * When the Gruntfile changes, we just want to lint it. In fact, when
+             * your Gruntfile changes, it will automatically be reloaded!
+             */
+            gruntfile: {
+                files: 'Gruntfile.js',
+                tasks: [ 'jshint:gruntfile' ],
+                options: {
+                    livereload: false
+                }
+            },
+
+            /**
+             * When our JavaScript source files change, we want to run lint them and
+             * run our unit tests.
+             */
+            jssrc: {
+                files: [
+                    '<%= src_files.js %>'
+                ],
+                tasks: [ 'jshint:src', 'copy:build_src_files_js' ]
+            },
+
+            /**
+             * When the CSS files change, we need to compile and minify them.
+             */
+            less: {
+                files: [ '<%= src_files.less %>' ],
+                tasks: [ 'recess:build' ]
+            }
         }
     };
 
@@ -236,19 +269,15 @@ module.exports = function (grunt) {
      * before watching for changes.
      */
     grunt.renameTask('watch');
-    grunt.registerTask('watch', [ 'build']);  // deploy to build folder and watch it every save file on src
-    grunt.registerTask('dev-deploy', [ 'build']);           // only deploy to build folder
-
-    /**
-     * The default task is to build and compile.
-     */
+    grunt.registerTask('watch', [ 'build', 'delta']);
     grunt.registerTask('deploy', [ 'build', 'compile' ]);
 
     /**
      * The `build` task gets your app ready to run for development and testing.
      */
     grunt.registerTask('build', [
-        'clean', 'jshint', 'recess:build', 'concat:build_css', 'concat:build_js'
+        'clean', 'jshint', 'concat:build_src_files_js', 'ngmin',
+        'copy:build_src_files_js', 'recess:build', 'concat:add_banner_css'
     ]);
 
     /**
@@ -256,6 +285,6 @@ module.exports = function (grunt) {
      * minifying your code.
      */
     grunt.registerTask('compile', [
-        'recess:compile', 'copy:compile_assets', 'ngmin', 'concat:compile_js', 'uglify'
+        'uglify', 'recess:compile'
     ]);
 };

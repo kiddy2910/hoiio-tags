@@ -1,11 +1,14 @@
 {
   "name": "hoiio-tags",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "repository": {
     "type": "svn",
     "url": ""
   },
   "homepage": "https://github.com/kiddy2910/hoiio-tags.git",
+  "authors": [
+    "kiddy2910 <dangduy2910@gmail.com>"
+  ],
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.1",

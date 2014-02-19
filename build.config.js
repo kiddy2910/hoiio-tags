@@ -4,10 +4,8 @@ module.exports = {
     compile_dir: 'bin',
 
     src_files: {
-        js: "hoiio-tags.js"
-    },
+        js: [ 'lib/hoiio-tags.js' ],
 
-    css_files: {
-        less: "hoiio-tags.less"
+        less: [ 'lib/hoiio-tags.less' ]
     }
 };
