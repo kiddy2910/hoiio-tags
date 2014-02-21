@@ -9,7 +9,7 @@
   "ignore": [
     "*",
     "!hoiio-tags.js",
-    "!hoiio-tags.less"
+    "!hoiio-tags.css"
   ],
   "description": "Hoiio Tags is based on bootstrap-tagsinput.js",
   "keywords": [
