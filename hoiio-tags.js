@@ -1,5 +1,5 @@
 /**
- * hoiio-tags v1.1.0 (2014-02-19)
+ * hoiio-tags v1.1.0 (2014-02-24)
  *
  * Author: kiddy2910 <dangduy2910@gmail.com>
  * https://github.com/kiddy2910/hoiio-tags.git
@@ -103,13 +103,15 @@
         }
         return;
       }
+      // validator for validating input value
       if (this.validator) {
         if (!this.validator(item)) {
           return;
         }
       }
-      if (this.length) {
-        if (self.itemsArray.length >= this.length) {
+      // maximum number of items are allowed to input
+      if (this.numberOfItems) {
+        if (self.itemsArray.length >= this.numberOfItems) {
           return;
         }
       }
