@@ -1,5 +1,5 @@
 /**
- * hoiio-tags v1.1.0 (2014-02-24)
+ * hoiio-tags v1.1.0 (2014-02-26)
  *
  * Author: kiddy2910 <dangduy2910@gmail.com>
  * https://github.com/kiddy2910/hoiio-tags.git
@@ -37,9 +37,11 @@
     this.objectItems = options && options.itemValue;
     this.validator = options.validator;
     // validator for input values
-    this.numberOfItems = options.numberOfItems;
+    this.converter = options.converter;
+    // converter for input value after validate and before add to array of values
+    defaultOptions.maxTags = Number(options.numberOfItems);
     // max number of items
-    this.lengthOfItem = options.lengthOfItem;
+    this.lengthOfItem = Number(options.lengthOfItem);
     // max length of input value
     this.placeholderText = element.hasAttribute('placeholder') ? this.$element.attr('placeholder') : '';
     this.inputSize = Math.max(1, this.placeholderText.length);
@@ -106,12 +108,6 @@
       // validator for validating input value
       if (this.validator) {
         if (!this.validator(item)) {
-          return;
-        }
-      }
-      // maximum number of items are allowed to input
-      if (this.numberOfItems) {
-        if (self.itemsArray.length >= this.numberOfItems) {
           return;
         }
       }
@@ -308,7 +304,11 @@
           // When key corresponds one of the confirmKeys, add current input
           // as a new tag
           if (self.options.freeInput && $.inArray(event.which, self.options.confirmKeys) >= 0) {
-            self.add($input.val());
+            if (self.converter) {
+              self.add(self.converter($input.val()));
+            } else {
+              self.add($input.val());
+            }
             $input.val('');
             event.preventDefault();
           }
