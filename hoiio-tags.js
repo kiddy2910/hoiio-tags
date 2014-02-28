@@ -1,5 +1,5 @@
 /**
- * hoiio-tags v1.2.0 (2014-02-26)
+ * hoiio-tags v1.2.0 (2014-02-28)
  *
  * Author: kiddy2910 <dangduy2910@gmail.com>
  * https://github.com/kiddy2910/hoiio-tags.git
@@ -172,10 +172,8 @@
       while (self.itemsArray.length > 0) {
         self.itemsArray.pop();
       }
+      self.$container.removeClass('bootstrap-tagsinput-max');
       self.pushVal();
-      if (self.options.maxTags && !this.isEnabled()) {
-        this.enable();
-      }
     },
     refresh: function () {
       var self = this;
