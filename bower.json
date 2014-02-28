@@ -1,6 +1,6 @@
 {
   "name": "hoiio-tags",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "homepage": "https://github.com/kiddy2910/hoiio-tags.git",
   "main": [ "hoiio-tags.js", "hoiio-tags.less" ],
   "authors": [
