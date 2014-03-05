@@ -1,5 +1,5 @@
 /**
- * hoiio-tags v1.2.1 (2014-02-28)
+ * hoiio-tags v1.2.2 (2014-03-05)
  *
  * Author: kiddy2910 <dangduy2910@gmail.com>
  * https://github.com/kiddy2910/hoiio-tags.git
@@ -258,6 +258,11 @@
       }
       self.$container.on('click', $.proxy(function (event) {
         self.$input.focus();
+      }, self));
+      self.$input.on('blur', $.proxy(function (event) {
+        var $input = $(event.target);
+        self.add($input.val());
+        $input.val('');
       }, self));
       self.$container.on('keydown', 'input', $.proxy(function (event) {
         var $input = $(event.target), $inputWrapper = self.findInputWrapper();
