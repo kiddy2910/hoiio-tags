@@ -35,10 +35,10 @@
     this.isSelect = element.tagName === 'SELECT';
     this.multiple = this.isSelect && element.hasAttribute('multiple');
     this.objectItems = options && options.itemValue;
+    this.correcter = options.correcter;
+    // correct data before validator execute
     this.validator = options.validator;
     // validator for input values
-    this.converter = options.converter;
-    // converter for input value after validate and before add to array of values
     defaultOptions.maxTags = Number(options.numberOfItems);
     // max number of items
     this.lengthOfItem = Number(options.lengthOfItem);
@@ -89,6 +89,10 @@
           }
           return;
         }
+      }
+      // correct data before validating
+      if (self.correcter) {
+        item = self.correcter(item);
       }
       var itemValue = self.options.itemValue(item), itemText = self.options.itemText(item), tagClass = self.options.tagClass(item);
       // Ignore items allready added
@@ -307,11 +311,7 @@
           // When key corresponds one of the confirmKeys, add current input
           // as a new tag
           if (self.options.freeInput && $.inArray(event.which, self.options.confirmKeys) >= 0) {
-            if (self.converter) {
-              self.add(self.converter($input.val()));
-            } else {
-              self.add($input.val());
-            }
+            self.add($input.val());
             $input.val('');
             event.preventDefault();
           }
